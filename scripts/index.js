@@ -25,10 +25,6 @@ const initialCards = [
   },
 ];
 
-initialCards.forEach(function (card) {
-  console.log(card.name);
-});
-
 const editProfileButton = document.querySelector(".profile__edit-button");
 const editPopup = document.querySelector("#edit-popup");
 const closeEditPopupButton = editPopup.querySelector(".popup__close");
@@ -37,6 +33,28 @@ const profileDescription = document.querySelector(".profile__description");
 const nameInput = editPopup.querySelector('input[name="name"]');
 const descriptionInput = editPopup.querySelector('input[name="description"]');
 const editForm = document.querySelector("#edit-profile-form");
+const cardsList = document.querySelector(".cards__list");
+const cardTemplate = document
+  .querySelector("#card-template")
+  .content.querySelector(".card");
+
+function getCardElement(
+  name = "Sin título",
+  link = "./images/placeholder.jpg",
+) {
+  const cardElement = cardTemplate.cloneNode(true);
+  const cardTitle = cardElement.querySelector(".card__title");
+  const cardImage = cardElement.querySelector(".card__image");
+  cardTitle.textContent = name;
+  cardImage.src = link;
+  cardImage.alt = name;
+  return cardElement;
+}
+
+function renderCard(name, link, container) {
+  const cardElement = getCardElement(name, link);
+  container.prepend(cardElement);
+}
 
 function openModal(modal) {
   modal.classList.add("popup_is-opened");
@@ -71,3 +89,7 @@ closeEditPopupButton.addEventListener("click", () => {
   closeModal(editPopup);
 });
 editForm.addEventListener("submit", handleProfileFormSubmit);
+
+initialCards.forEach((card) => {
+  renderCard(card.name, card.link, cardsList);
+});
