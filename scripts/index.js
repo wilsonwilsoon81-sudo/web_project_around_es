@@ -37,6 +37,16 @@ const cardsList = document.querySelector(".cards__list");
 const cardTemplate = document
   .querySelector("#card-template")
   .content.querySelector(".card");
+const addCardButton = document.querySelector(".profile__add-button");
+const newCardPopup = document.querySelector("#new-card-popup");
+const closeNewCardPopupButton = newCardPopup.querySelector(".popup__close");
+const newCardForm = document.querySelector("#new-card-form");
+const placeNameInput = newCardForm.querySelector('input[name="place-name"]');
+const linkInput = newCardForm.querySelector('input[name="link"]');
+const imagePopup = document.querySelector("#image-popup");
+const popupImage = imagePopup.querySelector(".popup__image");
+const popupCaption = imagePopup.querySelector(".popup__caption");
+const closeImagePopupButton = imagePopup.querySelector(".popup__close");
 
 function getCardElement(
   name = "Sin título",
@@ -45,9 +55,27 @@ function getCardElement(
   const cardElement = cardTemplate.cloneNode(true);
   const cardTitle = cardElement.querySelector(".card__title");
   const cardImage = cardElement.querySelector(".card__image");
+  const likeButton = cardElement.querySelector(".card__like-button");
+  const deleteButton = cardElement.querySelector(".card__delete-button");
   cardTitle.textContent = name;
   cardImage.src = link;
   cardImage.alt = name;
+
+  cardImage.addEventListener("click", function () {
+    popupImage.src = cardImage.src;
+    popupImage.alt = cardImage.alt;
+    popupCaption.textContent = name;
+    openModal(imagePopup);
+  });
+
+  likeButton.addEventListener("click", function () {
+    likeButton.classList.toggle("card__like-button_is-active");
+  });
+
+  deleteButton.addEventListener("click", function () {
+    cardElement.remove();
+  });
+
   return cardElement;
 }
 
@@ -74,6 +102,10 @@ function handleOpenEditModal() {
   openModal(editPopup);
 }
 
+function handleOpenNewCardModal() {
+  openModal(newCardPopup);
+}
+
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
 
@@ -82,6 +114,27 @@ function handleProfileFormSubmit(evt) {
 
   closeModal(editPopup);
 }
+
+function handleCardFormSubmit(evt) {
+  evt.preventDefault();
+
+  const name = placeNameInput.value;
+  const link = linkInput.value;
+
+  renderCard(name, link, cardsList);
+
+  closeModal(newCardPopup);
+
+  newCardForm.reset();
+}
+
+addCardButton.addEventListener("click", handleOpenNewCardModal);
+
+closeNewCardPopupButton.addEventListener("click", () => {
+  closeModal(newCardPopup);
+});
+
+newCardForm.addEventListener("submit", handleCardFormSubmit);
 
 editProfileButton.addEventListener("click", handleOpenEditModal);
 
@@ -92,4 +145,8 @@ editForm.addEventListener("submit", handleProfileFormSubmit);
 
 initialCards.forEach((card) => {
   renderCard(card.name, card.link, cardsList);
+});
+
+closeImagePopupButton.addEventListener("click", () => {
+  closeModal(imagePopup);
 });
