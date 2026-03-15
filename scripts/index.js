@@ -161,7 +161,6 @@ function fillProfileForm() {
 function handleOpenEditModal() {
   fillProfileForm();
 
-  // Ocultar errores al abrir
   editProfileInputs.forEach(({ errorSpan }) => {
     if (errorSpan) {
       errorSpan.classList.remove("popup__input-error_active");
@@ -172,17 +171,14 @@ function handleOpenEditModal() {
 }
 
 function handleOpenNewCardModal() {
-  // Resetear el formulario (limpia valores y estados de validación)
   newCardForm.reset();
 
-  // Ocultar mensajes de error
   newCardInputs.forEach(({ errorSpan }) => {
     if (errorSpan) {
       errorSpan.classList.remove("popup__input-error_active");
     }
   });
 
-  // Desactivar el botón (porque los campos están vacíos)
   newCardSubmitButton.disabled = true;
 
   openModal(newCardPopup);
@@ -257,4 +253,14 @@ function handlePopupClick(evt) {
 editPopup.addEventListener("click", handlePopupClick);
 newCardPopup.addEventListener("click", handlePopupClick);
 imagePopup.addEventListener("click", handlePopupClick);
-// <<<<< FIN AGREGADO <<<<<
+
+function handleEscapeKey(evt) {
+  if (evt.key === "Escape") {
+    const openedPopup = document.querySelector(".popup.popup_is-opened");
+    if (openedPopup) {
+      closeModal(openedPopup);
+    }
+  }
+}
+
+document.addEventListener("keydown", handleEscapeKey);
