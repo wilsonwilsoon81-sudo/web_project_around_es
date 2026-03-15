@@ -47,6 +47,19 @@ const imagePopup = document.querySelector("#image-popup");
 const popupImage = imagePopup.querySelector(".popup__image");
 const popupCaption = imagePopup.querySelector(".popup__caption");
 const closeImagePopupButton = imagePopup.querySelector(".popup__close");
+const saveButton = editForm.querySelector(".popup__button");
+const editProfileInputs = [
+  {
+    input: nameInput,
+    errorSpan: editPopup.querySelector(".popup__input-error_type_name"),
+  },
+  {
+    input: descriptionInput,
+    errorSpan: editPopup.querySelector(".popup__input-error_type_description"),
+  },
+];
+
+setupFormValidation(editForm, saveButton, editProfileInputs);
 
 function getCardElement(
   name = "Sin título",
@@ -92,9 +105,46 @@ function closeModal(modal) {
   modal.classList.remove("popup_is-opened");
 }
 
+function toggleinputError(input, errorSpan) {
+  if (!errorSpan) return;
+
+  if (input.validity.valid) {
+    errorSpan.classList.remove("popup__input-error_active");
+  } else {
+    errorSpan.textContent = input.validationMessage;
+    errorSpan.classList.add("popup__input-error_active");
+  }
+}
+
+function toggleSubmitButton(form, submitButton) {
+  if (!submitButton) return;
+  submitButton.disabled = !form.checkValidity();
+}
+
+function setupFormValidation(form, submitButton, inputsConfig) {
+  form.addEventListener("input", (evt) => {
+    const targetInput = evt.target;
+    const config = inputsConfig.find((conf) => conf.input === targetInput);
+    if (config && config.errorSpan) {
+      toggleinputError(targetInput, config.errorSpan);
+    }
+    toggleSubmitButton(form, submitButton);
+  });
+
+  inputsConfig.forEach(({ input, errorSpan }) => {
+    if (errorSpan) {
+      toggleinputError(input, errorSpan);
+    }
+  });
+  toggleSubmitButton(form, submitButton);
+}
+
 function fillProfileForm() {
   nameInput.value = profileTitle.textContent;
   descriptionInput.value = profileDescription.textContent;
+
+  nameInput.dispatchEvent(new Event("input", { bubbles: true }));
+  descriptionInput.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
 function handleOpenEditModal() {
@@ -109,10 +159,19 @@ function handleOpenNewCardModal() {
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
 
-  profileTitle.textContent = nameInput.value;
-  profileDescription.textContent = descriptionInput.value;
+  if (editForm.checkValidity()) {
+    profileTitle.textContent = nameInput.value;
+    profileDescription.textContent = descriptionInput.value;
 
-  closeModal(editPopup);
+    // Ocultar errores al cerrar el popup
+    editProfileInputs.forEach(({ errorSpan }) => {
+      if (errorSpan) {
+        errorSpan.classList.remove("popup__input-error_active");
+      }
+    });
+
+    closeModal(editPopup);
+  }
 }
 
 function handleCardFormSubmit(evt) {

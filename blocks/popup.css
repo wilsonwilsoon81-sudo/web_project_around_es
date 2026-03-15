@@ -117,6 +117,22 @@
   margin: 0;
 }
 
+.popup__input-error {
+  display: none;
+  color: red;
+  font-size: 12px;
+  min-height: 16px;
+}
+
+.popup__input-error_active {
+  display: block;
+}
+
+.button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
 @media screen and (max-width: 544px) {
   .popup {
     bottom: 112px;
