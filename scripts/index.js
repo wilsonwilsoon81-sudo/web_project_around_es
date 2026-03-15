@@ -160,10 +160,31 @@ function fillProfileForm() {
 
 function handleOpenEditModal() {
   fillProfileForm();
+
+  // Ocultar errores al abrir
+  editProfileInputs.forEach(({ errorSpan }) => {
+    if (errorSpan) {
+      errorSpan.classList.remove("popup__input-error_active");
+    }
+  });
+
   openModal(editPopup);
 }
 
 function handleOpenNewCardModal() {
+  // Resetear el formulario (limpia valores y estados de validación)
+  newCardForm.reset();
+
+  // Ocultar mensajes de error
+  newCardInputs.forEach(({ errorSpan }) => {
+    if (errorSpan) {
+      errorSpan.classList.remove("popup__input-error_active");
+    }
+  });
+
+  // Desactivar el botón (porque los campos están vacíos)
+  newCardSubmitButton.disabled = true;
+
   openModal(newCardPopup);
 }
 
@@ -174,7 +195,6 @@ function handleProfileFormSubmit(evt) {
     profileTitle.textContent = nameInput.value;
     profileDescription.textContent = descriptionInput.value;
 
-    // Ocultar errores al cerrar el popup
     editProfileInputs.forEach(({ errorSpan }) => {
       if (errorSpan) {
         errorSpan.classList.remove("popup__input-error_active");
@@ -194,7 +214,6 @@ function handleCardFormSubmit(evt) {
 
     renderCard(name, link, cardsList);
 
-    // Ocultar errores al cerrar
     newCardInputs.forEach(({ errorSpan }) => {
       if (errorSpan) {
         errorSpan.classList.remove("popup__input-error_active");
@@ -228,3 +247,14 @@ initialCards.forEach((card) => {
 closeImagePopupButton.addEventListener("click", () => {
   closeModal(imagePopup);
 });
+
+function handlePopupClick(evt) {
+  if (evt.target === evt.currentTarget) {
+    closeModal(evt.currentTarget);
+  }
+}
+
+editPopup.addEventListener("click", handlePopupClick);
+newCardPopup.addEventListener("click", handlePopupClick);
+imagePopup.addEventListener("click", handlePopupClick);
+// <<<<< FIN AGREGADO <<<<<
