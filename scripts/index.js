@@ -59,12 +59,23 @@ const editProfileInputs = [
   },
 ];
 
+const newCardSubmitButton = newCardForm.querySelector(".popup__button");
+const newCardInputs = [
+  {
+    input: placeNameInput,
+    errorSpan: newCardPopup.querySelector(".popup__input-error_type_card-name"),
+  },
+  {
+    input: linkInput,
+    errorSpan: newCardPopup.querySelector(".popup__input-error_type_url"),
+  },
+];
+
+setupFormValidation(newCardForm, newCardSubmitButton, newCardInputs);
+
 setupFormValidation(editForm, saveButton, editProfileInputs);
 
-function getCardElement(
-  name = "Sin título",
-  link = "./images/placeholder.jpg",
-) {
+function getCardElement(name, link) {
   const cardElement = cardTemplate.cloneNode(true);
   const cardTitle = cardElement.querySelector(".card__title");
   const cardImage = cardElement.querySelector(".card__image");
@@ -177,14 +188,22 @@ function handleProfileFormSubmit(evt) {
 function handleCardFormSubmit(evt) {
   evt.preventDefault();
 
-  const name = placeNameInput.value;
-  const link = linkInput.value;
+  if (newCardForm.checkValidity()) {
+    const name = placeNameInput.value;
+    const link = linkInput.value;
 
-  renderCard(name, link, cardsList);
+    renderCard(name, link, cardsList);
 
-  closeModal(newCardPopup);
+    // Ocultar errores al cerrar
+    newCardInputs.forEach(({ errorSpan }) => {
+      if (errorSpan) {
+        errorSpan.classList.remove("popup__input-error_active");
+      }
+    });
 
-  newCardForm.reset();
+    closeModal(newCardPopup);
+    newCardForm.reset();
+  }
 }
 
 addCardButton.addEventListener("click", handleOpenNewCardModal);

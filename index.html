@@ -107,14 +107,19 @@
             type="button"
           ></button>
           <h3 class="popup__title">Nuevo lugar</h3>
-          <form class="popup__form" id="new-card-form">
+          <form class="popup__form" id="new-card-form" novalidate>
             <input
               class="popup__input popup__input_type_card-name"
               name="place-name"
               placeholder="Título"
               required
               type="text"
+              minlength="2"
+              maxlength="30"
             />
+            <span class="popup__input-error popup__input-error_type_card-name"
+              >El título debe tener entre 2 y 30 caracteres</span
+            >
             <input
               class="popup__input popup__input_type_url"
               name="link"
@@ -122,6 +127,9 @@
               required
               type="url"
             />
+            <span class="popup__input-error popup__input-error_type_url"
+              >Por favor, ingresa una URL válida</span
+            >
             <button class="button popup__button" type="submit">Crear</button>
           </form>
         </div>
