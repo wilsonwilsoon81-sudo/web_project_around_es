@@ -1,30 +1,31 @@
 const initialCards = [
   {
     name: "Valle de Yosemite",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_yosemite.jpg",
+    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_yosemite.jpg  ",
   },
   {
     name: "Lago Louise",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lake-louise.jpg",
+    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lake-louise.jpg  ",
   },
   {
     name: "Montañas Calvas",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_bald-mountains.jpg",
+    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_bald-mountains.jpg  ",
   },
   {
     name: "Latemar",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_latemar.jpg",
+    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_latemar.jpg  ",
   },
   {
     name: "Parque Nacional de la Vanoise",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_vanoise.jpg",
+    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_vanoise.jpg  ",
   },
   {
     name: "Lago di Braies",
-    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lago.jpg",
+    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lago.jpg  ",
   },
 ];
 
+// 🔹 Selectores del DOM
 const editProfileButton = document.querySelector(".profile__edit-button");
 const editPopup = document.querySelector("#edit-popup");
 const closeEditPopupButton = editPopup.querySelector(".popup__close");
@@ -48,6 +49,8 @@ const popupImage = imagePopup.querySelector(".popup__image");
 const popupCaption = imagePopup.querySelector(".popup__caption");
 const closeImagePopupButton = imagePopup.querySelector(".popup__close");
 const saveButton = editForm.querySelector(".popup__button");
+
+// 🔹 Configuración de validación de formularios
 const editProfileInputs = [
   {
     input: nameInput,
@@ -72,19 +75,21 @@ const newCardInputs = [
 ];
 
 setupFormValidation(newCardForm, newCardSubmitButton, newCardInputs);
-
 setupFormValidation(editForm, saveButton, editProfileInputs);
 
+// 🔹 Función para crear elementos de tarjeta
 function getCardElement(name, link) {
   const cardElement = cardTemplate.cloneNode(true);
   const cardTitle = cardElement.querySelector(".card__title");
   const cardImage = cardElement.querySelector(".card__image");
   const likeButton = cardElement.querySelector(".card__like-button");
   const deleteButton = cardElement.querySelector(".card__delete-button");
+
   cardTitle.textContent = name;
   cardImage.src = link;
   cardImage.alt = name;
 
+  // Event listeners internos de la tarjeta (estos SÍ permanecen, son por instancia)
   cardImage.addEventListener("click", function () {
     popupImage.src = cardImage.src;
     popupImage.alt = cardImage.alt;
@@ -108,14 +113,80 @@ function renderCard(name, link, container) {
   container.prepend(cardElement);
 }
 
+// 🔹 Funciones para gestionar listeners de popups (¡LA MEJORA CLAVE!)
+
+// Handlers con nombre para overlay click (uno por popup)
+function handleEditPopupOverlayClick(evt) {
+  if (evt.target === evt.currentTarget) {
+    closeModal(editPopup);
+  }
+}
+
+function handleNewCardPopupOverlayClick(evt) {
+  if (evt.target === evt.currentTarget) {
+    closeModal(newCardPopup);
+  }
+}
+
+function handleImagePopupOverlayClick(evt) {
+  if (evt.target === evt.currentTarget) {
+    closeModal(imagePopup);
+  }
+}
+
+// Handler para tecla Escape (compartido)
+function handleEscapeKey(evt) {
+  if (evt.key === "Escape") {
+    const openedPopup = document.querySelector(".popup.popup_is-opened");
+    if (openedPopup) {
+      closeModal(openedPopup);
+    }
+  }
+}
+
+// Agregar listeners cuando se abre un popup
+function addPopupListeners(popup, overlayClickHandler) {
+  popup.addEventListener("click", overlayClickHandler);
+  document.addEventListener("keydown", handleEscapeKey);
+}
+
+// Remover listeners cuando se cierra un popup
+function removePopupListeners(popup, overlayClickHandler) {
+  popup.removeEventListener("click", overlayClickHandler);
+
+  // Solo removemos el keydown si NO hay otros popups abiertos
+  const anyPopupOpen = document.querySelector(".popup.popup_is-opened");
+  if (!anyPopupOpen) {
+    document.removeEventListener("keydown", handleEscapeKey);
+  }
+}
+
+// 🔹 Funciones para abrir/cerrar modales (con gestión dinámica de listeners)
 function openModal(modal) {
   modal.classList.add("popup_is-opened");
+
+  if (modal === editPopup) {
+    addPopupListeners(editPopup, handleEditPopupOverlayClick);
+  } else if (modal === newCardPopup) {
+    addPopupListeners(newCardPopup, handleNewCardPopupOverlayClick);
+  } else if (modal === imagePopup) {
+    addPopupListeners(imagePopup, handleImagePopupOverlayClick);
+  }
 }
 
 function closeModal(modal) {
   modal.classList.remove("popup_is-opened");
+
+  if (modal === editPopup) {
+    removePopupListeners(editPopup, handleEditPopupOverlayClick);
+  } else if (modal === newCardPopup) {
+    removePopupListeners(newCardPopup, handleNewCardPopupOverlayClick);
+  } else if (modal === imagePopup) {
+    removePopupListeners(imagePopup, handleImagePopupOverlayClick);
+  }
 }
 
+// 🔹 Funciones de validación de formularios
 function toggleinputError(input, errorSpan) {
   if (!errorSpan) return;
 
@@ -150,6 +221,7 @@ function setupFormValidation(form, submitButton, inputsConfig) {
   toggleSubmitButton(form, submitButton);
 }
 
+// 🔹 Handlers de apertura de modales
 function fillProfileForm() {
   nameInput.value = profileTitle.textContent;
   descriptionInput.value = profileDescription.textContent;
@@ -184,6 +256,7 @@ function handleOpenNewCardModal() {
   openModal(newCardPopup);
 }
 
+// 🔹 Handlers de envío de formularios
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
 
@@ -221,6 +294,7 @@ function handleCardFormSubmit(evt) {
   }
 }
 
+// 🔹 Event listeners iniciales (botones de apertura y cierre directo)
 addCardButton.addEventListener("click", handleOpenNewCardModal);
 
 closeNewCardPopupButton.addEventListener("click", () => {
@@ -234,33 +308,14 @@ editProfileButton.addEventListener("click", handleOpenEditModal);
 closeEditPopupButton.addEventListener("click", () => {
   closeModal(editPopup);
 });
-editForm.addEventListener("submit", handleProfileFormSubmit);
 
-initialCards.forEach((card) => {
-  renderCard(card.name, card.link, cardsList);
-});
+editForm.addEventListener("submit", handleProfileFormSubmit);
 
 closeImagePopupButton.addEventListener("click", () => {
   closeModal(imagePopup);
 });
 
-function handlePopupClick(evt) {
-  if (evt.target === evt.currentTarget) {
-    closeModal(evt.currentTarget);
-  }
-}
-
-editPopup.addEventListener("click", handlePopupClick);
-newCardPopup.addEventListener("click", handlePopupClick);
-imagePopup.addEventListener("click", handlePopupClick);
-
-function handleEscapeKey(evt) {
-  if (evt.key === "Escape") {
-    const openedPopup = document.querySelector(".popup.popup_is-opened");
-    if (openedPopup) {
-      closeModal(openedPopup);
-    }
-  }
-}
-
-document.addEventListener("keydown", handleEscapeKey);
+// 🔹 Renderizado inicial de tarjetas
+initialCards.forEach((card) => {
+  renderCard(card.name, card.link, cardsList);
+});
