@@ -1,8 +1,16 @@
-// ═════════════════════════════════════════════════════════════
-// 📦 SECCIÓN 1: DATOS Y CONFIGURACIÓN GLOBAL
-// ═════════════════════════════════════════════════════════════
+import Card from "./Card.js";
+import FormValidator from "./FormValidator.js";
+import {
+  handleEditPopupOverlayClick,
+  handleNewCardPopupOverlayClick,
+  handleImagePopupOverlayClick,
+  handleEscapeKey,
+  addPopupListeners,
+  removePopupListeners,
+  openModal,
+  closeModal,
+} from "./utils.js";
 
-// Datos iniciales de tarjetas
 const initialCards = [
   {
     name: "Valle de Yosemite",
@@ -30,7 +38,6 @@ const initialCards = [
   },
 ];
 
-// ✅ Configuración para validación de formularios (REUTILIZABLE)
 const validationConfig = {
   formSelector: ".popup__form",
   inputSelector: ".popup__input",
@@ -38,10 +45,6 @@ const validationConfig = {
   inputErrorClass: "popup__input_type_error",
   errorClass: "popup__input-error_active",
 };
-
-// ═════════════════════════════════════════════════════════════
-// 🔹 SECCIÓN 2: SELECTORES DEL DOM (Variables globales necesarias)
-// ═════════════════════════════════════════════════════════════
 
 const editProfileButton = document.querySelector(".profile__edit-button");
 const editPopup = document.querySelector("#edit-popup");
@@ -63,227 +66,58 @@ const popupImage = imagePopup.querySelector(".popup__image");
 const popupCaption = imagePopup.querySelector(".popup__caption");
 const closeImagePopupButton = imagePopup.querySelector(".popup__close");
 
-// ═════════════════════════════════════════════════════════════
-// 🗂️ SECCIÓN 3: DEFINICIÓN DE CLASES (Card y FormValidator)
-// ═════════════════════════════════════════════════════════════
+const escapeHandler = handleEscapeKey(closeModal);
 
-// ✅ CLASE Card - DEBE IR ANTES DE USARLA
-class Card {
-  constructor(data, templateSelector, onImageClick) {
-    this._name = data.name;
-    this._link = data.link;
-    this._templateSelector = templateSelector;
-    this._onImageClick = onImageClick;
-  }
+const editOverlayHandler = handleEditPopupOverlayClick(editPopup, closeModal);
+const newCardOverlayHandler = handleNewCardPopupOverlayClick(
+  newCardPopup,
+  closeModal,
+);
+const imageOverlayHandler = handleImagePopupOverlayClick(
+  imagePopup,
+  closeModal,
+);
 
-  _getTemplate() {
-    const cardElement = document
-      .querySelector(this._templateSelector)
-      .content.querySelector(".card")
-      .cloneNode(true);
-    return cardElement;
-  }
-
-  _handleLikeClick(evt) {
-    evt.target.classList.toggle("card__like-button_is-active");
-  }
-
-  _handleDeleteClick() {
-    this._element.remove();
-  }
-
-  _handleImageClick() {
-    if (typeof this._onImageClick === "function") {
-      this._onImageClick(this._name, this._link);
-    }
-  }
-
-  _setEventListeners() {
-    this._element
-      .querySelector(".card__image")
-      .addEventListener("click", () => this._handleImageClick());
-
-    this._element
-      .querySelector(".card__like-button")
-      .addEventListener("click", this._handleLikeClick.bind(this));
-
-    this._element
-      .querySelector(".card__delete-button")
-      .addEventListener("click", this._handleDeleteClick.bind(this));
-  }
-
-  generateCard() {
-    this._element = this._getTemplate();
-    this._element.querySelector(".card__title").textContent = this._name;
-    const cardImage = this._element.querySelector(".card__image");
-    cardImage.src = this._link;
-    cardImage.alt = this._name;
-    this._setEventListeners();
-    return this._element;
-  }
-}
-
-// ✅ CLASE FormValidator - DEBE IR ANTES DE USARLA
-class FormValidator {
-  constructor(config, formElement) {
-    this._config = config;
-    this._formElement = formElement;
-    this._inputList = Array.from(
-      this._formElement.querySelectorAll(this._config.inputSelector),
-    );
-    this._buttonElement = this._formElement.querySelector(
-      this._config.submitButtonSelector,
-    );
-  }
-
-  _showInputError(inputElement, errorMessage) {
-    const inputTypeClass = Array.from(inputElement.classList).find((cls) =>
-      cls.startsWith("popup__input_type_"),
-    );
-    if (!inputTypeClass) return;
-    const errorClass = inputTypeClass.replace(
-      "popup__input_type_",
-      "popup__input-error_type_",
-    );
-    const errorSpan = this._formElement.querySelector(`.${errorClass}`);
-
-    if (!errorSpan) return;
-
-    inputElement.classList.add(this._config.inputErrorClass);
-    errorSpan.textContent = inputElement.validationMessage;
-    errorSpan.classList.add(this._config.errorClass);
-  }
-
-  _hideInputError(inputElement) {
-    const inputTypeClass = Array.from(inputElement.classList).find((cls) =>
-      cls.startsWith("popup__input_type_"),
-    );
-
-    if (!inputTypeClass) return;
-
-    const errorClass = inputTypeClass.replace(
-      "popup__input_type_",
-      "popup__input-error_type_",
-    );
-    const errorSpan = this._formElement.querySelector(`.${errorClass}`);
-
-    if (!errorSpan) return;
-
-    inputElement.classList.remove(this._config.inputErrorClass);
-    errorSpan.classList.remove(this._config.errorClass);
-    errorSpan.textContent = "";
-  }
-
-  _checkInputValidity(inputElement) {
-    if (!inputElement.validity.valid) {
-      this._showInputError(inputElement);
-    } else {
-      this._hideInputError(inputElement);
-    }
-  }
-
-  _toggleButtonState() {
-    const hasInvalidInput = this._inputList.some(
-      (input) => !input.validity.valid,
-    );
-    this._buttonElement.disabled = hasInvalidInput;
-  }
-
-  _setInputListeners() {
-    this._inputList.forEach((inputElement) => {
-      inputElement.addEventListener("input", () => {
-        this._checkInputValidity(inputElement);
-        this._toggleButtonState();
-      });
-
-      // ✅ Validación inicial al cargar (para estado del botón)
-      this._checkInputValidity(inputElement);
-    });
-  }
-
-  _setEventListeners() {
-    this._setInputListeners();
-    this._toggleButtonState();
-  }
-
-  setEventListeners() {
-    this._setEventListeners();
-  }
-}
-
-// ═════════════════════════════════════════════════════════════
-// 🔹 SECCIÓN 4: FUNCIONES DE POPUPS (openModal, closeModal, etc.)
-// ═════════════════════════════════════════════════════════════
-
-function openModal(modal) {
+function openModalWithListeners(modal) {
   modal.classList.add("popup_is-opened");
   if (modal === editPopup) {
-    addPopupListeners(editPopup, handleEditPopupOverlayClick);
+    addPopupListeners(editPopup, editOverlayHandler, escapeHandler);
   } else if (modal === newCardPopup) {
-    addPopupListeners(newCardPopup, handleNewCardPopupOverlayClick);
+    addPopupListeners(newCardPopup, newCardOverlayHandler, escapeHandler);
   } else if (modal === imagePopup) {
-    addPopupListeners(imagePopup, handleImagePopupOverlayClick);
+    addPopupListeners(imagePopup, imageOverlayHandler, escapeHandler);
   }
 }
 
-function closeModal(modal) {
+function closeModalWithListeners(modal) {
   modal.classList.remove("popup_is-opened");
   if (modal === editPopup) {
-    removePopupListeners(editPopup, handleEditPopupOverlayClick);
+    removePopupListeners(editPopup, editOverlayHandler, escapeHandler);
   } else if (modal === newCardPopup) {
-    removePopupListeners(newCardPopup, handleNewCardPopupOverlayClick);
+    removePopupListeners(newCardPopup, newCardOverlayHandler, escapeHandler);
   } else if (modal === imagePopup) {
-    removePopupListeners(imagePopup, handleImagePopupOverlayClick);
+    removePopupListeners(imagePopup, imageOverlayHandler, escapeHandler);
   }
 }
 
-// ✅ Función helper para abrir popup de imagen (callback para Card)
 function openImagePopup(name, link) {
   popupImage.src = link;
   popupImage.alt = name;
   popupCaption.textContent = name;
-  openModal(imagePopup);
+  openModalWithListeners(imagePopup);
 }
 
-// ═════════════════════════════════════════════════════════════
-// 🔹 SECCIÓN 5: GESTIÓN DINÁMICA DE EVENT LISTENERS PARA POPUPS
-// ═════════════════════════════════════════════════════════════
+const editFormValidator = new FormValidator(validationConfig, editForm);
+editFormValidator.setEventListeners();
 
-function handleEditPopupOverlayClick(evt) {
-  if (evt.target === evt.currentTarget) closeModal(editPopup);
-}
+const newCardFormValidator = new FormValidator(validationConfig, newCardForm);
+newCardFormValidator.setEventListeners();
 
-function handleNewCardPopupOverlayClick(evt) {
-  if (evt.target === evt.currentTarget) closeModal(newCardPopup);
-}
-
-function handleImagePopupOverlayClick(evt) {
-  if (evt.target === evt.currentTarget) closeModal(imagePopup);
-}
-
-function handleEscapeKey(evt) {
-  if (evt.key === "Escape") {
-    const openedPopup = document.querySelector(".popup.popup_is-opened");
-    if (openedPopup) closeModal(openedPopup);
-  }
-}
-
-function addPopupListeners(popup, overlayClickHandler) {
-  popup.addEventListener("click", overlayClickHandler);
-  document.addEventListener("keydown", handleEscapeKey);
-}
-
-function removePopupListeners(popup, overlayClickHandler) {
-  popup.removeEventListener("click", overlayClickHandler);
-  const anyPopupOpen = document.querySelector(".popup.popup_is-opened");
-  if (!anyPopupOpen) {
-    document.removeEventListener("keydown", handleEscapeKey);
-  }
-}
-
-// ═════════════════════════════════════════════════════════════
-// 🔹 SECCIÓN 6: HANDLERS DE FORMULARIOS Y MODALES
-// ═════════════════════════════════════════════════════════════
+initialCards.forEach((cardData) => {
+  const card = new Card(cardData, "#card-template", openImagePopup);
+  const cardElement = card.generateCard();
+  cardsList.prepend(cardElement);
+});
 
 function fillProfileForm() {
   nameInput.value = profileTitle.textContent;
@@ -298,17 +132,12 @@ function handleOpenEditModal() {
   editErrorSpans.forEach((span) =>
     span.classList.remove("popup__input-error_active"),
   );
-
-  openModal(editPopup);
+  openModalWithListeners(editPopup);
 }
 
 function handleOpenNewCardModal() {
-  newCardForm.reset();
-  const newCardErrorSpans = newCardForm.querySelectorAll(".popup__input-error");
-  newCardErrorSpans.forEach((span) =>
-    span.classList.remove("popup__input-error_active"),
-  );
-  openModal(newCardPopup);
+  newCardFormValidator.resetForm();
+  openModalWithListeners(newCardPopup);
 }
 
 function handleProfileFormSubmit(evt) {
@@ -316,10 +145,11 @@ function handleProfileFormSubmit(evt) {
   if (editForm.checkValidity()) {
     profileTitle.textContent = nameInput.value;
     profileDescription.textContent = descriptionInput.value;
-    editProfileInputs.forEach(({ errorSpan }) => {
-      if (errorSpan) errorSpan.classList.remove("popup__input-error_active");
-    });
-    closeModal(editPopup);
+    const editErrorSpans = editForm.querySelectorAll(".popup__input-error");
+    editErrorSpans.forEach((span) =>
+      span.classList.remove("popup__input-error_active"),
+    );
+    closeModalWithListeners(editPopup);
   }
 }
 
@@ -328,48 +158,26 @@ function handleCardFormSubmit(evt) {
   if (newCardForm.checkValidity()) {
     const name = placeNameInput.value;
     const link = linkInput.value;
-    // ✅ Usamos la clase Card aquí
     const card = new Card({ name, link }, "#card-template", openImagePopup);
     const cardElement = card.generateCard();
     cardsList.prepend(cardElement);
-    newCardInputs.forEach(({ errorSpan }) => {
-      if (errorSpan) errorSpan.classList.remove("popup__input-error_active");
-    });
-    closeModal(newCardPopup);
-    newCardForm.reset();
+    newCardFormValidator.resetForm();
+    closeModalWithListeners(newCardPopup);
   }
 }
 
-// ═════════════════════════════════════════════════════════════
-// 🔹 SECCIÓN 7: INSTANCIACIÓN DE CLASES Y CONFIGURACIÓN INICIAL
-// ═════════════════════════════════════════════════════════════
-
-// ✅ Instanciar validadores de formularios
-const editFormValidator = new FormValidator(validationConfig, editForm);
-editFormValidator.setEventListeners();
-
-const newCardFormValidator = new FormValidator(validationConfig, newCardForm);
-newCardFormValidator.setEventListeners();
-
-// ✅ Renderizar tarjetas iniciales usando la clase Card
-initialCards.forEach((cardData) => {
-  const card = new Card(cardData, "#card-template", openImagePopup);
-  const cardElement = card.generateCard();
-  cardsList.prepend(cardElement);
-});
-
-// ═════════════════════════════════════════════════════════════
-// 🔹 SECCIÓN 8: EVENT LISTENERS GLOBALES (Botones, submits, etc.)
-// ═════════════════════════════════════════════════════════════
-
 addCardButton.addEventListener("click", handleOpenNewCardModal);
 closeNewCardPopupButton.addEventListener("click", () =>
-  closeModal(newCardPopup),
+  closeModalWithListeners(newCardPopup),
 );
 newCardForm.addEventListener("submit", handleCardFormSubmit);
 
 editProfileButton.addEventListener("click", handleOpenEditModal);
-closeEditPopupButton.addEventListener("click", () => closeModal(editPopup));
+closeEditPopupButton.addEventListener("click", () =>
+  closeModalWithListeners(editPopup),
+);
 editForm.addEventListener("submit", handleProfileFormSubmit);
 
-closeImagePopupButton.addEventListener("click", () => closeModal(imagePopup));
+closeImagePopupButton.addEventListener("click", () =>
+  closeModalWithListeners(imagePopup),
+);

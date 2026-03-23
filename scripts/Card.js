@@ -1,0 +1,54 @@
+export default class Card {
+  constructor(data, templateSelector, onImageClick) {
+    this._name = data.name;
+    this._link = data.link;
+    this._templateSelector = templateSelector;
+    this._onImageClick = onImageClick;
+  }
+
+  _getTemplate() {
+    const cardElement = document
+      .querySelector(this._templateSelector)
+      .content.querySelector(".card")
+      .cloneNode(true);
+    return cardElement;
+  }
+
+  _handleLikeClick(evt) {
+    evt.target.classList.toggle("card__like-button_is-active");
+  }
+
+  _handleDeleteClick() {
+    this._element.remove();
+  }
+
+  _handleImageClick() {
+    if (typeof this._onImageClick === "function") {
+      this._onImageClick(this._name, this._link);
+    }
+  }
+
+  _setEventListeners() {
+    this._element
+      .querySelector(".card__image")
+      .addEventListener("click", () => this._handleImageClick());
+
+    this._element
+      .querySelector(".card__like-button")
+      .addEventListener("click", this._handleLikeClick.bind(this));
+
+    this._element
+      .querySelector(".card__delete-button")
+      .addEventListener("click", this._handleDeleteClick.bind(this));
+  }
+
+  generateCard() {
+    this._element = this._getTemplate();
+    this._element.querySelector(".card__title").textContent = this._name;
+    const cardImage = this._element.querySelector(".card__image");
+    cardImage.src = this._link;
+    cardImage.alt = this._name;
+    this._setEventListeners();
+    return this._element;
+  }
+}
