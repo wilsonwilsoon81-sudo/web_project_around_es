@@ -3,11 +3,15 @@ export default class Card {
     data,
     templateSelector,
     { handleCardClick, handleLikeClick, handleDeleteClick },
+    userId,
   ) {
     this._name = data.name;
     this._link = data.link;
     this._cardId = data._id || data.id || null;
+    this._ownerId = data.owner?._id || data.owner || null;
+    this._isLiked = data.isLiked || false;
     this._templateSelector = templateSelector;
+    this._userId = userId;
     this._onCardClick = handleCardClick;
     this._onLikeClick = handleLikeClick;
     this._onDeleteClick = handleDeleteClick;
@@ -22,10 +26,30 @@ export default class Card {
     return template.content.querySelector(".card").cloneNode(true);
   }
 
+  _setLikeStatus() {
+    const likeButton = this._element.querySelector(".card__like-button");
+    if (this._isLiked) {
+      likeButton.classList.add("card__like-button_is-active");
+    } else {
+      likeButton.classList.remove("card__like-button_is-active");
+    }
+  }
+
+  _checkOwner() {
+    const deleteButton = this._element.querySelector(".card__delete-button");
+
+    if (this._ownerId !== this._userId) {
+      deleteButton.style.display = "none";
+    }
+  }
+
   _handleLikeClick(evt) {
     evt.currentTarget.classList.toggle("card__like-button_is-active");
 
     if (typeof this._onLikeClick === "function" && this._cardId) {
+      const isLikeClick = evt.currentTarget.classList.contains(
+        "card__like-button_is-active",
+      );
       this._onLikeClick(this._cardId);
     }
   }
@@ -34,8 +58,6 @@ export default class Card {
     if (typeof this._onDeleteClick === "function") {
       this._onDeleteClick(this._cardId, this._element);
     }
-
-    this._element.remove();
   }
 
   _handleImageClick() {
@@ -67,7 +89,15 @@ export default class Card {
     cardImage.src = this._link;
     cardImage.alt = this._name;
 
+    this._setLikeStatus();
+    this._checkOwner();
+
     this._setEventListeners();
     return this._element;
+  }
+
+  updateLikeStatus(isLiked) {
+    this._isLiked = isLiked;
+    this._setLikeStatus();
   }
 }
