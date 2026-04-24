@@ -82,24 +82,57 @@ const editProfilePopup = new PopupWithForm("#edit-popup", (values) => {
 });
 editProfilePopup.setEventListeners();
 
+// ═════════════════════════════════════════════════════════════
+// 🔹 AGREGAR NUEVA TARJETA CON PERSISTENCIA (reemplaza tu callback actual)
+// ═════════════════════════════════════════════════════════════
+
 const newCardPopup = new PopupWithForm("#new-card-popup", (values) => {
+  // ✅ 1. Mostrar estado de "creando" (deshabilitar botón)
+  const submitButton = newCardPopup._submitButton;
+  const originalButtonText = submitButton?.textContent || "Crear";
+
+  if (submitButton) {
+    submitButton.textContent = "Creando...";
+    submitButton.disabled = true;
+  }
+
+  // ✅ 2. Enviar datos al servidor
   api
     .addNewCard(values["place-name"], values.link)
     .then((newCardData) => {
+      // ✅ 3. Crear tarjeta con los datos DEL SERVIDOR (incluye _id, owner, isLiked, etc.)
       const newCard = new Card(
-        newCardData,
+        newCardData, // ← Datos completos desde API: { name, link, _id, owner, isLiked, createdAt }
         "#card-template",
         {
           handleCardClick: (name, link) => imagePopup.open(name, link),
           handleLikeClick: (id, isLiked) => handleLikeClick(id, isLiked),
           handleDeleteClick: (id, element) => handleDeleteClick(id, element),
         },
-        currentUserId,
+        currentUserId, // ← Para verificar si puede eliminarla
       );
+
+      // ✅ 4. Agregar la tarjeta nueva al inicio de la cuadrícula
       section.addItem(newCard.generateCard());
+
+      // ✅ 5. Cerrar el popup y resetear el formulario
       newCardPopup.close();
+      newCardPopup._form.reset(); // ← Limpia los campos para la próxima vez
     })
-    .catch((err) => console.error("❌ Error al agregar tarjeta:", err));
+    .catch((err) => {
+      // ❌ 6. Manejar errores
+      console.error("❌ Error al agregar tarjeta:", err);
+      alert(
+        "No se pudo agregar la tarjeta. Verifica la URL de la imagen e intenta de nuevo.",
+      );
+    })
+    .finally(() => {
+      // 🔄 7. Restaurar botón (siempre, haya éxito o error)
+      if (submitButton) {
+        submitButton.textContent = originalButtonText;
+        submitButton.disabled = false;
+      }
+    });
 });
 newCardPopup.setEventListeners();
 
