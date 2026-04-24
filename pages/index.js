@@ -38,12 +38,47 @@ const section = new Section(
   ".cards__list",
 );
 
+// ═════════════════════════════════════════════════════════════
+// 🔹 EDITAR PERFIL CON PERSISTENCIA (reemplaza tu callback actual)
+// ═════════════════════════════════════════════════════════════
+
 const editProfilePopup = new PopupWithForm("#edit-popup", (values) => {
-  userInfo.setUserInfo({
-    name: values.name,
-    job: values.description,
-  });
-  editProfilePopup.close();
+  // ✅ 1. Mostrar estado de "guardando" (deshabilitar botón)
+  const submitButton = editProfilePopup._submitButton; // o editProfilePopup._form.querySelector('[type="submit"]')
+  const originalButtonText = submitButton?.textContent || "Guardar";
+
+  if (submitButton) {
+    submitButton.textContent = "Guardando...";
+    submitButton.disabled = true;
+  }
+
+  // ✅ 2. Enviar datos al servidor
+  api
+    .updateUserInfo(values.name, values.description)
+    .then((updatedUser) => {
+      // ✅ 3. Actualizar la UI con los datos confirmados por el servidor
+      userInfo.setUserInfo({
+        name: updatedUser.name,
+        job: updatedUser.about, // La API devuelve "about", tu UI usa "job"
+      });
+
+      // ✅ 4. Cerrar el popup
+      editProfilePopup.close();
+    })
+    .catch((err) => {
+      // ❌ 5. Manejar errores
+      console.error("❌ Error al actualizar perfil:", err);
+      alert(
+        "No se pudo guardar los cambios. Verifica tu conexión e intenta de nuevo.",
+      );
+    })
+    .finally(() => {
+      // 🔄 6. Restaurar botón (siempre, haya éxito o error)
+      if (submitButton) {
+        submitButton.textContent = originalButtonText;
+        submitButton.disabled = false;
+      }
+    });
 });
 editProfilePopup.setEventListeners();
 
