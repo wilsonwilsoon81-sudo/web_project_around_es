@@ -133,6 +133,33 @@
   cursor: not-allowed;
 }
 
+/* ═════════════════════════════════════════════════════════════ */
+/* 🔹 ESTILOS ESPECÍFICOS PARA POPUP DE CONFIRMACIÓN */
+/* ═════════════════════════════════════════════════════════════ */
+
+.popup__content_confirm {
+  max-width: 300px; /* Más pequeño que los otros popups */
+  min-height: auto;
+  padding: 34px 36px;
+  text-align: center;
+}
+
+.popup__title_confirm {
+  margin-bottom: 24px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.popup__button_confirm {
+  margin-top: 0; /* Sin margen extra */
+  background-color: #000000;
+  width: 100%;
+}
+
+.popup__button_confirm:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
 @media screen and (max-width: 544px) {
   .popup {
     bottom: 112px;
