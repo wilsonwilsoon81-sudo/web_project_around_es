@@ -1,5 +1,3 @@
-// scripts/components/Popup.js
-
 export default class Popup {
   constructor(popupSelector) {
     this._popup = document.querySelector(popupSelector);
@@ -8,13 +6,13 @@ export default class Popup {
   }
 
   open() {
-    if (!this._popup) return; // ✅ Verificación de seguridad
+    if (!this._popup) return;
     this._popup.classList.add("popup_is-opened");
     document.addEventListener("keydown", this._handleEscClose);
   }
 
   close() {
-    if (!this._popup) return; // ✅ Verificación de seguridad
+    if (!this._popup) return;
     this._popup.classList.remove("popup_is-opened");
     document.removeEventListener("keydown", this._handleEscClose);
   }
@@ -26,7 +24,7 @@ export default class Popup {
   }
 
   setEventListeners() {
-    if (!this._popup) return; // ✅ Verificación de seguridad
+    if (!this._popup) return;
 
     if (this._closeButton) {
       this._closeButton.addEventListener("click", () => this.close());

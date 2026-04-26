@@ -5,9 +5,7 @@ export default class Section {
     this._container = document.querySelector(selector);
   }
 
-  // ✅ Section.js debe tener renderItems que RECIBA el array:
   renderItems(items) {
-    // ← Parámetro 'items' es importante
     console.log(
       "🔄 Section.renderItems llamado con",
       items?.length,

@@ -82,9 +82,6 @@ export default class Card {
 
     this._isLiked = isLiked;
 
-    console.log("🔄 _handleLikeClick - Nuevo estado:", isLiked);
-    console.log("🔄 _handleLikeClick - cardId:", this._cardId);
-
     if (typeof this._onLikeClick === "function" && this._cardId) {
       this._onLikeClick(this._cardId, isLiked);
     }

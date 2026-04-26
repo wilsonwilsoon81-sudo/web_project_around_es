@@ -17,7 +17,20 @@
       </header>
       <main class="content">
         <section class="profile page__section">
-          <img class="profile__image" src="./images/avatar.jpg" alt="Avatar" />
+          <div class="profile__image-container" id="avatar-container">
+            <img
+              class="profile__image"
+              src="./images/avatar.jpg"
+              alt="Avatar"
+            />
+            <button
+              type="button"
+              class="profile__edit-avatar"
+              aria-label="Editar avatar"
+              id="edit-avatar-button"
+            ></button>
+          </div>
+
           <div class="profile__info">
             <h1 class="profile__title">Jacques Cousteau</h1>
             <button
@@ -158,6 +171,29 @@
           >
             Sí
           </button>
+        </div>
+      </div>
+      <div class="popup popup_type_avatar" id="avatar-popup">
+        <div class="popup__content">
+          <button
+            type="button"
+            class="popup__close"
+            aria-label="Cerrar"
+          ></button>
+          <h3 class="popup__title">Cambiar foto de perfil</h3>
+          <form class="popup__form" id="avatar-form" novalidate>
+            <input
+              class="popup__input popup__input_type_avatar"
+              name="avatar"
+              placeholder="Enlace a la imagen"
+              type="url"
+              required
+            />
+            <span class="popup__input-error popup__input-error_type_avatar"
+              >Por favor, ingresa una URL válida</span
+            >
+            <button class="button popup__button" type="submit">Guardar</button>
+          </form>
         </div>
       </div>
     </div>

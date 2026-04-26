@@ -1,53 +1,64 @@
-import { API } from "../utils/constants.js";
+export default class Api {
+  constructor(options) {
+    this._baseUrl = options.baseUrl;
+    this._headers = options.headers;
+  }
 
-function request(endpoint, options = {}) {
-  return fetch(`${API.BASE_URL}${endpoint}`, {
-    headers: {
-      authorization: API.TOKEN,
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-    ...options,
-  }).then((res) => {
+  _checkResponse(res) {
     if (res.ok) {
       return res.json();
     }
+
     return Promise.reject(`Error: ${res.status}`);
-  });
-}
+  }
 
-export const api = {
-  getInitialCards: () => request("/cards"),
+  getInitialCards() {
+    return fetch(`${this._baseUrl}/cards`, {
+      headers: this._headers,
+    }).then(this._checkResponse.bind(this));
+  }
 
-  addNewCard: (name, link) =>
-    request("/cards", {
+  addNewCard(name, link) {
+    return fetch(`${this._baseUrl}/cards`, {
       method: "POST",
+      headers: this._headers,
       body: JSON.stringify({ name, link }),
-    }),
+    }).then(this._checkResponse.bind(this));
+  }
 
-  deleteCard: (cardId) =>
-    request(`/cards/${cardId}`, {
+  deleteCard(cardId) {
+    return fetch(`${this._baseUrl}/cards/${cardId}`, {
       method: "DELETE",
-    }),
+      headers: this._headers,
+    }).then(this._checkResponse.bind(this));
+  }
 
-  toggleLike: (cardId, isLiked) =>
-    request(`/cards/${cardId}/likes`, {
+  toggleLike(cardId, isLiked) {
+    return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
       method: isLiked ? "PUT" : "DELETE",
-    }),
+      headers: this._headers,
+    }).then(this._checkResponse.bind(this));
+  }
 
-  getUserInfo: () => request("/users/me"),
+  getUserInfo() {
+    return fetch(`${this._baseUrl}/users/me`, {
+      headers: this._headers,
+    }).then(this._checkResponse.bind(this));
+  }
 
-  updateUserInfo: (name, about) =>
-    request("/users/me", {
+  updateUserInfo(name, about) {
+    return fetch(`${this._baseUrl}/users/me`, {
       method: "PATCH",
+      headers: this._headers,
       body: JSON.stringify({ name, about }),
-    }),
+    }).then(this._checkResponse.bind(this));
+  }
 
-  updateUserAvatar: (avatarUrl) =>
-    request("/users/me/avatar", {
+  updateUserAvatar(avatarUrl) {
+    return fetch(`${this._baseUrl}/users/me/avatar`, {
       method: "PATCH",
+      headers: this._headers,
       body: JSON.stringify({ avatar: avatarUrl }),
-    }),
-};
-
-export default api;
+    }).then(this._checkResponse.bind(this));
+  }
+}

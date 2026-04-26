@@ -12,8 +12,12 @@ const validationConfig = {
 export default class PopupWithForm extends Popup {
   constructor(popupSelector, handleSubmit) {
     super(popupSelector);
+
     this._handleSubmit = handleSubmit;
     this._form = this._popup.querySelector(".popup__form");
+
+    this._submitButton = this._popup.querySelector(".popup__button");
+
     this._validator = new FormValidator(validationConfig, this._form);
   }
 
@@ -53,7 +57,8 @@ export default class PopupWithForm extends Popup {
       span.classList.remove("popup__input-error_active");
     });
 
-    const button = this._form.querySelector(".popup__button");
-    if (button) button.disabled = false;
+    if (this._submitButton) {
+      this._submitButton.disabled = false;
+    }
   }
 }
