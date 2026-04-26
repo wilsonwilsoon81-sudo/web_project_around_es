@@ -1,18 +1,13 @@
-
-scripts/utils/constants.js
-
-
+# Ignorar node_modules
 node_modules/
-.env
-.env.local
-.env*.local
 
+# Ignorar constants.js con el token
+src/utils/constants.js
 
+# Ignorar archivos del sistema
 .DS_Store
 Thumbs.db
 
-
-.idea/
-.vscode/
-*.swp
-*.swo
+# Ignorar logs y temp
+*.log
+.tmp/
