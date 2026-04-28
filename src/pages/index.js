@@ -4,15 +4,15 @@ import PopupWithImage from "../components/PopupWithImage.js";
 import PopupWithForm from "../components/PopupWithForm.js";
 import UserInfo from "../components/UserInfo.js";
 import Api from "../components/Api.js";
-import { API } from "../utils/constants.js";
+import { apiConfig } from "../utils/constants.js";
 import PopupWithConfirmation from "../components/PopupWithConfirmation.js";
 
 let currentUserId = null;
 
 const api = new Api({
-  baseUrl: API.BASE_URL,
+  baseUrl: apiConfig.baseUrl,
   headers: {
-    authorization: API.TOKEN,
+    authorization: apiConfig.token,
     "Content-Type": "application/json",
   },
 });
