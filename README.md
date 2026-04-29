@@ -106,63 +106,6 @@ El proyecto consume una **API RESTful** que maneja la autenticación, almacenami
 
 ---
 
-## 📸 Capturas de Pantalla
-
-### 🏠 Página Principal
-
-![Página Principal](./images/readme/home.png)
-_Vista inicial con tarjetas de lugares y perfil de usuario_
-
-### ✏️ Edición de Perfil
-
-![Editar Perfil](./images/readme/edit-profile.png)
-_Formulario para actualizar nombre y descripción_
-
-### 🖼️ Actualización de Avatar
-
-![Avatar](./images/readme/avatar.png)
-_Hover effect con icono de edición en el avatar_
-
-### ➕ Agregar Tarjeta
-
-![Nueva Tarjeta](./images/readme/new-card.png)
-_Formulario para agregar nuevo lugar con imagen_
-
-### ❤️ Sistema de Likes
-
-![Likes](./images/readme/likes.png)
-_Interacción de "me gusta" con persistencia_
-
-### 🗑️ Confirmación de Eliminación
-
-![Eliminar](./images/readme/delete.png)
-_Popup de confirmación antes de eliminar tarjeta_
-
----
-
-## 🎥 Demostración en Video
-
-### 📹 Video de Demostración Completa
-
-**En el video podrás ver:**
-
-- Carga inicial de datos desde la API
-- Edición de perfil con persistencia
-- Agregar nueva tarjeta
-- Sistema de likes
-- Eliminación de tarjetas con confirmación
-- Actualización de avatar
-- Responsive design en móvil
-
-> 📌 **Nota**: Reemplaza `VIDEO_ID` con el ID de tu video de YouTube o sube el video a una plataforma y enlaza aquí.
-
----
-
-## 🔧 Instalación y Configuración
-
-### 1. Clonar el repositorio
-
-```bash
 git clone https://github.com/wilsonwilsoon81-sudo/web_project_around_es.git
 cd around
 
@@ -170,4 +113,7 @@ Autor
 Wilson Herrera
 📧 Email: wilson.wilsoon81@gmail.com
 🐙 GitHub: https://github.com/wilsonwilsoon81-sudo
+
+```
+
 ```
