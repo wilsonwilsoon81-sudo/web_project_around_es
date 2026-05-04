@@ -1,8 +1,6 @@
 # Ignorar node_modules
 node_modules/
 
-# Ignorar constants.js con el token
-src/utils/constants.js
 
 # Ignorar archivos del sistema
 .DS_Store
